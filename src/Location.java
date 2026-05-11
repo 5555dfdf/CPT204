@@ -1,9 +1,9 @@
-public class LocationFromCsv {
+public class Location {
 
     private String locationName;
     private int priority;
 
-    public LocationFromCsv(String locationName, int priority) {
+    public Location(String locationName, int priority) {
         this.locationName = locationName;
         this.priority = priority;
     }
@@ -18,7 +18,7 @@ public class LocationFromCsv {
 
     @Override
     public String toString() {
-        return "LocationFromCsv{" +
+        return "Location{" +
                 "locationName='" + locationName + '\'' +
                 ", priority=" + priority +
                 '}';
