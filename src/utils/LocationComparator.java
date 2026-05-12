@@ -4,6 +4,10 @@ import entity.Location;
 
 import java.util.Comparator;
 
+/**
+ * Sort by priority_score in descending order.
+ * If two rows have the same priority_score, sort by location_id in ascending order.
+ */
 public class LocationComparator implements Comparator<Location> {
 
     @Override
