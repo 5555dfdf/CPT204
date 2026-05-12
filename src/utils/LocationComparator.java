@@ -1,4 +1,4 @@
-package sortAlgorithms;
+package utils;
 
 import entity.Location;
 

@@ -2,6 +2,7 @@ package sortAlgorithms;
 
 import entity.Location;
 import utils.CsvReader;
+import utils.LocationComparator;
 
 import java.util.Comparator;
 import java.util.List;
