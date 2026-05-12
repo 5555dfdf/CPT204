@@ -1,3 +1,7 @@
+package sortAlgorithms;
+
+import entity.Location;
+
 import java.util.Comparator;
 
 public class LocationComparator implements Comparator<Location> {

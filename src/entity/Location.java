@@ -1,7 +1,9 @@
+package entity;
+
 public class Location {
 
-    private String locationName;
-    private int priority;
+    private final String locationName;
+    private final int priority;
 
     public Location(String locationName, int priority) {
         this.locationName = locationName;
@@ -18,7 +20,7 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location{" +
+        return "entity.Location{" +
                 "locationName='" + locationName + '\'' +
                 ", priority=" + priority +
                 '}';
