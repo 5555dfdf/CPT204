@@ -3,9 +3,12 @@ package graphAlgorithms;
 import entity.Path;
 import utils.CsvReader;
 import utils.GraphConverter;
+import utils.Searcher;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class DijkstraAlgorithm {
     public static void main(String[] args) {
@@ -15,32 +18,73 @@ public class DijkstraAlgorithm {
         int n = graph.length;
         int[][] shortestPaths = new int[n][n];
 
+        System.out.println("Calculating...");
         // 初始化全局最短路径矩阵
         for (int i = 0; i < n; i++) {
             Dijkstra dijkstra = new Dijkstra(graph, i);
             shortestPaths[i] = dijkstra.getDist(); // 每行是从 i 出发的最短路径
+
+            // 将距离变化记录写入CSV文件
+            writeDistChangesToCsv(i, dijkstra.getDistChanges());
         }
-        //Case 1: from the 1st selected location in Dataset A to itself.
-        System.out.println("Shortest distance of case 1: " + shortestPaths[1][1]);
-
-
-        //Case 2: from the 1st selected location in Dataset A to the 10th selected location in Dataset A.
-        System.out.println("Shortest distance of case 2: " + shortestPaths[1][10]);
-
-        //Case 3: from the 1st selected location in Dataset A to the 1st selected location in Dataset B, via the 5th selected location in Dataset B.
         /*
-        L0001 --> L0105 --> L0101
+        L0001 --> L0001
          */
-        System.out.println("Shortest distance of case 3: " + (shortestPaths[1][105]+shortestPaths[105][101]));
+        System.out.println("Shortest distance of case 1: " + shortestPaths[1][1]);
+        Searcher.searchPath(1,1, shortestPaths[1][1]);
+        System.out.println("-----------------------------------------------------------------------------------");
+        /*
+        L0001 --> L0010: 27
+        (L0001-->L0340(4)-->L0339(3)-->L0895(1)-->L0894(3)-->L0082(1)-->L0284(9)-->L0010(6))
+         */
+        System.out.println("Shortest distance of case 2: " + shortestPaths[1][10]);
+        Searcher.searchPath(1, 10, shortestPaths[1][10]);
 
-        //Case 4: find the shortest path from the 1st selected location in Dataset A to the
-        //1st selected location in Dataset C, such that the path must first pass through the
-        //5th selected location in Dataset B and then through the 5th selected location in
-        //Dataset C, in this order.
+        System.out.println("-----------------------------------------------------------------------------------");
+
+        /*
+        L0001 --> L0105 --> L0101 ()
+         */
+        System.out.println("Shortest distance of case 3: " + (shortestPaths[1][105] + shortestPaths[105][101]));
+        Searcher.searchPath(1, 105, shortestPaths[1][105]);
+        Searcher.searchPath(105, 101, shortestPaths[105][101]);
+
+        System.out.println("-----------------------------------------------------------------------------------");
         /*
         L0001 --> L0105 --> L0205 --> L0201
         */
         System.out.println("Shortest distance of case 4: " + (shortestPaths[1][105] + shortestPaths[105][205] + shortestPaths[205][201]));
+        Searcher.searchPath(1, 105, shortestPaths[1][105]);
+        Searcher.searchPath(105, 205, shortestPaths[105][205]);
+        Searcher.searchPath(205, 201, shortestPaths[205][201]);
+    }
+
+    private static void writeDistChangesToCsv(int startNode, List<String> distChanges) {
+        String fileName = String.format("dataset\\dist_changes_L%04d.csv", startNode);
+
+        // key：终点节点（如 L0751），value：最后一条记录
+        Map<String, String> lastUpdateMap = new HashMap<>();
+
+        // 遍历所有记录，同一个终点只保留最后一条
+        for (String change : distChanges) {
+            // 按逗号分割，获取第3列：终点节点
+            String[] parts = change.split(",");
+            if (parts.length >= 3) {
+                String targetNode = parts[2];
+                // 覆盖式存入，最后留下的就是最新的
+                lastUpdateMap.put(targetNode, change);
+            }
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println("Step,From,To,OldDistance,NewDistance,Description");
+            // 只写入最终的最新记录
+            for (String finalRecord : lastUpdateMap.values()) {
+                writer.println(finalRecord);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
@@ -48,16 +92,26 @@ class Dijkstra {
     private int[][] graph;
     private int[] dist; // 起点到其他节点的距离
     private boolean[] visited; // 节点是否被访问过
+    private List<String> distChanges; // 记录距离变化
+    private int stepCounter; // 步骤计数器
+    private int startNode; // 起点节点
 
     public Dijkstra(int[][] graph, int start) {
         this.graph = graph;
+        this.startNode = start;
         int n = graph.length;
         this.dist = new int[n];
         this.visited = new boolean[n];
+        this.distChanges = new ArrayList<>();
+        this.stepCounter = 0;
 
         Arrays.fill(dist, Integer.MAX_VALUE);
         dist[start] = 0;
         Arrays.fill(visited, false);
+        
+        // 记录初始状态
+        distChanges.add(String.format("%d,L%04d,L%04d,INF,0,Initialize start node distance to 0", 
+            stepCounter++, start, start));
 
         runDijkstra(start);
     }
@@ -82,7 +136,14 @@ class Dijkstra {
             for (int j = 0; j < n; j++) {
                 if (!visited[j] && graph[minIndex][j] != Integer.MAX_VALUE && dist[minIndex] != Integer.MAX_VALUE) {
                     if (dist[minIndex] + graph[minIndex][j] < dist[j]) {
+                        int oldDist = dist[j];
                         dist[j] = dist[minIndex] + graph[minIndex][j];
+                        // 记录距离变化
+                        String oldDistStr = (oldDist == Integer.MAX_VALUE) ? "INF" : String.valueOf(oldDist);
+                        String description = String.format("Update via L%04d: L%04d->L%04d(%d) + L%04d->L%04d(%d)", 
+                            minIndex, startNode, minIndex, dist[minIndex], minIndex, j, graph[minIndex][j]);
+                        distChanges.add(String.format("%d,L%04d,L%04d,%s,%d,%s", 
+                            stepCounter++, startNode, j, oldDistStr, dist[j], description));
                     }
                 }
             }
@@ -91,5 +152,9 @@ class Dijkstra {
 
     public int[] getDist() {
         return dist;
+    }
+    
+    public List<String> getDistChanges() {
+        return distChanges;
     }
 }
