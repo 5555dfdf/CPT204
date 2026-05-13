@@ -21,22 +21,26 @@ public class DijkstraAlgorithm {
             shortestPaths[i] = dijkstra.getDist(); // 每行是从 i 出发的最短路径
         }
         //Case 1: from the 1st selected location in Dataset A to itself.
-        System.out.println("Shortest distance from the 1st selected location in Dataset A to itself: " + shortestPaths[1][1]);
+        System.out.println("Shortest distance of case 1: " + shortestPaths[1][1]);
 
 
         //Case 2: from the 1st selected location in Dataset A to the 10th selected location in Dataset A.
-        System.out.println("Shortest distance from the 1st selected location in Dataset A to the 10th selected location in Dataset A: " + shortestPaths[1][10]);
+        System.out.println("Shortest distance of case 2: " + shortestPaths[1][10]);
 
         //Case 3: from the 1st selected location in Dataset A to the 1st selected location in Dataset B, via the 5th selected location in Dataset B.
-//        System.out.println(shortestPaths[1][101]);
-        System.out.println("Shortest distance from the 1st selected location in Dataset A to the 1st selected location in Dataset B, via the 5th selected location in Dataset B: " + shortestPaths[1][105]+shortestPaths[105][101]);
+        /*
+        L0001 --> L0105 --> L0101
+         */
+        System.out.println("Shortest distance of case 3: " + (shortestPaths[1][105]+shortestPaths[105][101]));
 
         //Case 4: find the shortest path from the 1st selected location in Dataset A to the
         //1st selected location in Dataset C, such that the path must first pass through the
         //5th selected location in Dataset B and then through the 5th selected location in
         //Dataset C, in this order.
-//        System.out.println(shortestPaths[1][201]);
-        System.out.println("Shortest distance of case 4: " + shortestPaths[1][105] + shortestPaths[105][205] + shortestPaths[205][201]);
+        /*
+        L0001 --> L0105 --> L0205 --> L0201
+        */
+        System.out.println("Shortest distance of case 4: " + (shortestPaths[1][105] + shortestPaths[105][205] + shortestPaths[205][201]));
     }
 }
 
