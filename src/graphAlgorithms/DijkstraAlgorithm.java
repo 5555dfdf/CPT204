@@ -34,13 +34,13 @@ public class DijkstraAlgorithm {
         System.out.println("Shortest distance of case 1: " + shortestPaths[1][1]);
         Searcher.searchPath(1,1, shortestPaths[1][1]);
         System.out.println("-----------------------------------------------------------------------------------");
+
         /*
         L0001 --> L0010 (27)
         L0001(0)-->L0340(4)-->L0339(7)-->L0895(8)-->L0894(11)-->L0082(12)-->L0284(21)-->L0010(27)
          */
         System.out.println("Shortest distance of case 2: " + shortestPaths[1][10]);
         Searcher.searchPath(1, 10, shortestPaths[1][10]);
-
         System.out.println("-----------------------------------------------------------------------------------");
 
         /*
@@ -51,15 +51,14 @@ public class DijkstraAlgorithm {
         System.out.println("Shortest distance of case 3: " + (shortestPaths[1][105] + shortestPaths[105][101]));
         Searcher.searchPath(1, 105, shortestPaths[1][105]);
         Searcher.searchPath(105, 101, shortestPaths[105][101]);
-
         System.out.println("-----------------------------------------------------------------------------------");
+
         /*
         L0001 --> L0105 --> L0205 --> L0201 (48)
         1. L0001 --> L0105: L0001(0)-->L0340(4)-->L0339(7)-->L0247(8)-->L0017(11)-->L0128(14)-->L0107(19)-->L0106(21)-->L0105(22)
         2. L0105 --> L0205: L0105(0)-->L0106(1)-->L0107(3)-->L0108(6)-->L0243(9)-->L0242(12)-->L0241(13)-->L0385(16)-->L0205(18)
         3. L0205 --> L0201: L0205(0)-->L0201(8)
         */
-
         System.out.println("Shortest distance of case 4: " + (shortestPaths[1][105] + shortestPaths[105][205] + shortestPaths[205][201]));
         Searcher.searchPath(1, 105, shortestPaths[1][105]);
         Searcher.searchPath(105, 205, shortestPaths[105][205]);
