@@ -15,7 +15,7 @@ public class CaseTwo {
     public static void main(String[] args) {
         List<Path> paths = CsvReader.readPath("dataset\\paths.csv");;
         DijkstraResult r = PqDijkstraAlgorithm.dijkstra(paths, "L0001", "L0010");
-        String formattedPath = formatRoute.FormatRoute(r.pathEdges, "L0010");
+        String formattedPath = formatRoute.FormatRoute(r.pathEdges, "L0001");
         System.out.println("Total distance: " + r.totalDistance + " route: " + formattedPath);
     }
 }
